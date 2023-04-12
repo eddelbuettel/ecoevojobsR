@@ -1,18 +1,52 @@
 #Note: delete extra ~empty rows from ecoevo_jobs before importing
 #Note: save-as UTF-8 csv before importing
 
-setwd("./ecoevo_jobs/")
-jobs <- read.csv("ecoevojobs_2023_04_04.csv", stringsAsFactors = F, header = T,
-                 strip.white = TRUE, fileEncoding = "UTF-8")
+jobs <- list(
+  faculty = readxl::read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 1),
+  postdoc = readxl::read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 2))
+jobs <- lapply(jobs, 
+               FUN = function(x) {colnames(x) <- x[1, ]; x <- x[-1, ]; return(x)})
+jobs <- lapply(jobs, FUN = function(x) {return(x[!is.na(x$Timestamp), ])})
 
 #Read in Carnegie data sheet
-# Downloaded from: https://carnegieclassifications.iu.edu/downloads.php
-carnegie <- read.csv("carnegie_2018.csv", stringsAsFactors = F)
+carnegie_val <- 
+  readxl::read_excel("./data-raw/CCIHE2021-PublicData.xlsx", sheet = "Values")
+colnames(carnegie_val) <- c("Variable", "Label", "Value", "Value_Label")
+carnegie_val <- carnegie_val[!is.na(carnegie_val$Value_Label), ]
 
-#Label R1 & R2 schools
-carnegie$insti_ranking <- "Other"
-carnegie$insti_ranking[carnegie$BASIC2018 == 15] <- "R1" #R1 schools coded as 15 in 2018 dataset
-carnegie$insti_ranking[carnegie$BASIC2018 == 16] <- "R2" #R2 schools coded as 16 in 2018 dataset
+fill_vals <- function(x) {
+  if(is.na(x[1])) {stop("first value must not be NA")}
+  for (i in 1:length(x)) {if(is.na(x[i])) {x[i] <- x[i-1]}}
+  return(x)
+}
+carnegie_val$Variable <- fill_vals(carnegie_val$Variable)
+carnegie_val$Label <- fill_vals(carnegie_val$Label)
+
+carnegie_val <- dplyr::filter(carnegie_val,
+                              !Variable %in% c("Basic2000", "BASIC2005",
+                                               "BASIC2010", "BASIC2015",
+                                               "BASIC2018"))
+#Label R1 and R2
+carnegie_val <- dplyr::mutate(
+  carnegie_val,
+  Value_Label = ifelse(Variable == "BASIC2021",
+                       ifelse(Value == 15,
+                              paste("R1", Value_Label),
+                              ifelse(Value == 16,
+                                     paste("R2", Value_Label),
+                                     Value_Label)),
+                       Value_Label))
+
+
+carnegie_dat <- 
+  readxl::read_excel("./data-raw/CCIHE2021-PublicData.xlsx", sheet = "Data")
+carnegie_dat <- dplyr::select(carnegie_dat,
+                              !c(basic2000, basic2005, basic2010,
+                              basic2015, basic2018))
+
+                              
+##STOPPED here
+
 
 ##TODO: add state matching for same-name schools, like Marian University
 ##      or Wheaton College
