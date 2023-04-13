@@ -27,7 +27,8 @@ me! <mikeblazanin@gmail.com>. Otherwise, they’ll be updated when I can.
 If you want an up-to-date version for yourself, you can simply follow
 these steps:
 
-1.  Create a folder
+1.  Create a folder. Open R and set your working directory to this
+    folder.
 2.  Download and save the
     [ecoevo_jobs_analysis.R](https://github.com/mikeblazanin/ecoevojobsR/blob/master/R/ecoevo_jobs_analysis.R)
     file into that folder
@@ -37,5 +38,6 @@ these steps:
     into that subfolder
 5.  Download the latest ecoevojobs spreadsheet as an Excel file, and
     overwrite the existing `ecoevojobs 22-23.xlsx` file
-6.  Run ecoevo_jobs_analysis.R. The script should automatically update
-    the `ecoevojobsR_faculty.csv` and `ecoevojobsR_postdocs.csv` files.
+6.  Run ecoevo_jobs_analysis.R (with the working directory in the parent
+    folder). The script should automatically update the
+    `ecoevojobsR_faculty.csv` and `ecoevojobsR_postdocs.csv` files.
