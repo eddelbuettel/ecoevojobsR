@@ -1,21 +1,23 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-## What is this?
+## What is this respository for?
 
-[ecoevojobs.net](ecoevojobs.net) is a widely-used community board for
-academic jobs in ecology, evolutionary biology, and related disciplines.
-However, the ecoevojobs spreadsheet has relatively little information
-automatically included about the institution where the job posting is.
+[ecoevojobs.net](http://ecoevojobs.net) is a widely-used community board
+for academic jobs in ecology, evolutionary biology, and related
+disciplines. However, the ecoevojobs spreadsheet has relatively little
+information automatically included about the institution where the job
+posting is.
 
-This repository automatically pulls public information from the Carnegie
-classfication of post-secondary education institutions and merges it
+This repository automatically pulls public information from [the
+Carnegie Classification of Institutions of Higher
+Education](https://carnegieclassifications.acenet.edu/) and merges it
 into the ecoevojobs spreadsheet.
 
-[You can find the faculty jobs listing file
+[You can find the most-recently updated faculty jobs listing file
 here](https://github.com/mikeblazanin/ecoevojobsR/blob/master/data-raw/ecoevojobsR_faculty.csv)
 
-[You can find the postdoc jobs listing file
+[You can find the most-recently updated postdoc jobs listing file
 here](https://github.com/mikeblazanin/ecoevojobsR/blob/master/data-raw/ecoevojobsR_postdoc.csv)
 
 Note that I couldn’t figure out an easy way to automate the updating of
