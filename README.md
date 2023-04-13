@@ -22,10 +22,11 @@ here](https://github.com/mikeblazanin/ecoevojobsR/blob/master/data-raw/ecoevojob
 
 Note that I couldn’t figure out an easy way to automate the updating of
 these spreadsheets. If you have an idea how that could be done, email
-me! <mikeblazanin@gmail.com>. Otherwise, they’ll be updated when I can.
+me! <mikeblazanin@gmail.com>. Otherwise, they’ll be updated when I can,
+or when people ask me to.
 
-If you want an up-to-date version for yourself, you can simply follow
-these steps:
+If you want an up-to-date version for yourself and don’t want to wait on
+me, you can simply follow these steps:
 
 1.  Create a folder. Open R and set your working directory to this
     folder.
