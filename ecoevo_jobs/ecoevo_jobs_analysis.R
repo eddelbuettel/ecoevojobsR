@@ -1,7 +1,5 @@
-#Note: delete extra ~empty rows from ecoevo_jobs before importing
-#Note: save-as UTF-8 csv before importing
-
 library(readxl)
+#also need dplyr
 
 jobs <- list(
   faculty = read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 1,
@@ -55,11 +53,13 @@ carnegie_var <- as.data.frame(carnegie_var)
 
 aliases <- read.csv("./data-raw/aliases.csv", fileEncoding = "UTF-8")
 
-#Convert numeric codes into meaninful labels
+#Convert numeric codes into meaningful labels
 for(i in 1:ncol(carnegie_dat)) {
   col <- colnames(carnegie_dat)[i]
-  if(any(grepl(pattern = col, carnegie_val$Variable, ignore.case = TRUE))) {
-    temp <- carnegie_val[grep(col, carnegie_val$Variable, ignore.case = TRUE), ]
+  if(any(grepl(pattern = paste0("^", col, "$"), carnegie_val$Variable, 
+               ignore.case = TRUE))) {
+    temp <- carnegie_val[grep(pattern = paste0("^", col, "$"), carnegie_val$Variable, 
+                              ignore.case = TRUE), ]
     carnegie_dat[, i] <- temp$Value_Label[match(carnegie_dat[, i], temp$Value)]
   }
 }
@@ -70,7 +70,8 @@ colnames(carnegie_dat) <-
          mytable = carnegie_var$Variable,
          mylabels = carnegie_var$Label,
          function(clnm, mytable, mylabels) {
-           mylabels[grep(pattern = clnm, x = mytable, ignore.case = TRUE)]})
+           mylabels[grep(pattern = paste0("^", clnm, "$"), 
+                         x = mytable, ignore.case = TRUE)]})
 
 #Match institution names
 uniq_inst <- unique(c(jobs[[1]]$Institution, jobs[[2]]$Institution))
@@ -78,9 +79,8 @@ find_matches <- function(jobs, carnegie, aliases) {
   #Jobs should have columns named "Institution" and "Location"
   #Carnegie should have column named "Institution name"
   jobs <- cbind(jobs, NA, NA, NA)
-  colnames(jobs)[(ncol(jobs)-1):ncol(jobs)] <- 
+  colnames(jobs)[(ncol(jobs)-2):ncol(jobs)] <- 
     c("Institution name", "partial_matched", "State abbreviation")
-  
   for(i in 1:nrow(jobs)) {
     myinst <- jobs$Institution[i]
 
@@ -173,7 +173,7 @@ write.csv(x = jobs2$aliases, file = "./data-raw/aliases_new2.csv",
 
 #Join carnegie_dat and jobs using matched institution name
 jobs1 <- dplyr::left_join(x = jobs1$jobs, y = carnegie_dat)
-jobs2 <- dplyr::left_join(x = jobs1$jobs, y = carnegie_dat)
+jobs2 <- dplyr::left_join(x = jobs2$jobs, y = carnegie_dat)
 
 write.csv(jobs1, "./data-raw/ecoevojobsR_faculty.csv", row.names = FALSE)
 write.csv(jobs2, "./data-raw/ecoevojobsR_postdoc.csv", row.names = FALSE)
