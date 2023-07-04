@@ -3,9 +3,22 @@ library(readxl)
 
 jobs <- list(
   faculty = read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 1,
-                               range = cell_rows(c(2, NA))),
+                               range = cell_rows(c(2, NA)), col_types = "text"),
   postdoc = read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 2,
-                               range = cell_rows(c(2, NA))))
+                               range = cell_rows(c(2, NA)), col_types = "text"))
+coltypes <- list(rep("text", ncol(jobs[[1]])), rep("text", ncol(jobs[[2]])))
+coltypes[[1]][colnames(jobs[[1]]) %in%
+                c("Timestamp", "Review Date", "Last Update")] <- "date"
+coltypes[[2]][colnames(jobs[[2]]) %in%
+                c("Timestamp", "Review Date", "Last Update")] <- "date"
+
+jobs <- list(
+  faculty = read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 1,
+                       range = cell_rows(c(2, NA)), 
+                       col_types = coltypes[[1]]),
+  postdoc = read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 2,
+                       range = cell_rows(c(2, NA)), col_types = coltypes[[2]]))
+
 jobs <- lapply(jobs, FUN = function(x) {return(x[!is.na(x$Timestamp), ])})
 
 #Read in Carnegie data sheets
@@ -149,6 +162,7 @@ find_matches <- function(jobs, carnegie, aliases) {
             data.frame("ecoevo_names" = unmatched_names[which_msng],
                        "carnegie_names" = NA, "checked" = "N"))
     aliases <- aliases[order(aliases$checked, aliases$ecoevo_names), ]
+    print(paste("There are", length(which_msng), "new aliases which need a match"))
   }
 
   myrows <- which(is.na(jobs$`Institution name`))
@@ -170,6 +184,9 @@ write.csv(x = jobs1$aliases, file = "./data-raw/aliases_new1.csv",
           row.names = FALSE, fileEncoding = "UTF-8")
 write.csv(x = jobs2$aliases, file = "./data-raw/aliases_new2.csv", 
           row.names = FALSE, fileEncoding = "UTF-8")
+
+##If there are new aliases, they need to be added to aliases.csv
+## and have their matching institution name saved there too
 
 #Join carnegie_dat and jobs using matched institution name
 jobs1 <- dplyr::left_join(x = jobs1$jobs, y = carnegie_dat)
