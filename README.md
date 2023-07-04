@@ -42,3 +42,21 @@ me, you can simply follow these steps:
 6.  Run ecoevo_jobs_analysis.R (with the working directory in the parent
     folder). The script should automatically update the
     `ecoevojobsR_faculty.csv` and `ecoevojobsR_postdocs.csv` files.
+
+Note that some institution names may be unable to be matched
+automatically. If this is the case, during execution
+`ecoevo_jobs_analysis.R` will print statement with the number of
+institutions for which this is true.
+
+If you’d like to manually tell the script how to match those:
+
+1.  Find the `aliases_new1.csv` and `aliases_new2.csv` files that were
+    created by running script, they should be located in the `data-raw`
+    folder
+2.  Copy-paste the rows from those files where the `checked` column is
+    `N` into the `aliases.csv` file
+3.  For each institution, find the corresponding row in the `Data` tab
+    of the `CCIHE2021-PublicData.xlsx` file.
+4.  Copy-paste the `name` from that row in `CCIHE2021-PublicData.xlsx`
+    into the `carnegie_name` column of the corresponding row in
+    `aliases.csv`
