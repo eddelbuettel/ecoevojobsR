@@ -1,23 +1,16 @@
-library(readxl)
+library(gsheet)
 #also need dplyr
 
+#These are the links for the 2022-2023 sheet
 jobs <- list(
-  faculty = read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 1,
-                               range = cell_rows(c(2, NA)), col_types = "text"),
-  postdoc = read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 2,
-                               range = cell_rows(c(2, NA)), col_types = "text"))
-coltypes <- list(rep("text", ncol(jobs[[1]])), rep("text", ncol(jobs[[2]])))
-coltypes[[1]][colnames(jobs[[1]]) %in%
-                c("Timestamp", "Review Date", "Last Update")] <- "date"
-coltypes[[2]][colnames(jobs[[2]]) %in%
-                c("Timestamp", "Review Date", "Last Update")] <- "date"
+  faculty = gsheet2tbl("https://docs.google.com/spreadsheets/d/1cqTuSeLtH-Zw7X9ZtnhQxzw3r19Rya9nzdqRW9apTmY/edit#gid=865906911"),
+  postdoc = gsheet2tbl("https://docs.google.com/spreadsheets/d/1cqTuSeLtH-Zw7X9ZtnhQxzw3r19Rya9nzdqRW9apTmY/edit#gid=168586174")
+)
 
-jobs <- list(
-  faculty = read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 1,
-                       range = cell_rows(c(2, NA)), 
-                       col_types = coltypes[[1]]),
-  postdoc = read_excel("./data-raw/ecoevojobs 22-23.xlsx", sheet = 2,
-                       range = cell_rows(c(2, NA)), col_types = coltypes[[2]]))
+#Drop first row, make 2nd row new headers
+jobs <- lapply(jobs, function(x){colnames(x) <- x[1, ]; x <- x[-1, ]})
+#Drop Mod flag and all following columns
+jobs <- lapply(jobs, function(x){return(x[, 1:(which(colnames(x) == "Mod Flag")-1)])})
 
 jobs <- lapply(jobs, FUN = function(x) {return(x[!is.na(x$Timestamp), ])})
 
