@@ -1,5 +1,5 @@
 library(gsheet)
-#also need dplyr
+library(dplyr)
 
 #These are the links for the 2022-2023 sheet
 jobs <- list(
@@ -172,11 +172,15 @@ jobs1 <- find_matches(jobs = jobs[[1]], carnegie = carnegie_dat,
                           aliases = aliases)
 jobs2 <- find_matches(jobs = jobs[[2]], carnegie = carnegie_dat,
                       aliases = aliases)
-                            
-write.csv(x = jobs1$aliases, file = "./data-raw/aliases_new1.csv", 
-          row.names = FALSE, fileEncoding = "UTF-8")
-write.csv(x = jobs2$aliases, file = "./data-raw/aliases_new2.csv", 
-          row.names = FALSE, fileEncoding = "UTF-8")
+
+if(nrow(jobs1$aliases) > nrow(aliases)) {                            
+  write.csv(x = jobs1$aliases, file = "./data-raw/aliases_new1.csv", 
+            row.names = FALSE, fileEncoding = "UTF-8")
+}
+if(nrow(jobs2$aliases) > nrow(aliases)) {
+  write.csv(x = jobs2$aliases, file = "./data-raw/aliases_new2.csv", 
+            row.names = FALSE, fileEncoding = "UTF-8")
+}
 
 ##If there are new aliases, they need to be added to aliases.csv
 ## and have their matching institution name saved there too
