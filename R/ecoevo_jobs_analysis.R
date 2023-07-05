@@ -4,8 +4,14 @@ library(readxl)
 
 #These are the links for the 2022-2023 sheet
 jobs <- list(
-  faculty = gsheet2tbl("https://docs.google.com/spreadsheets/d/1cqTuSeLtH-Zw7X9ZtnhQxzw3r19Rya9nzdqRW9apTmY/edit#gid=865906911"),
-  postdoc = gsheet2tbl("https://docs.google.com/spreadsheets/d/1cqTuSeLtH-Zw7X9ZtnhQxzw3r19Rya9nzdqRW9apTmY/edit#gid=168586174")
+  faculty =
+    read.csv(text = gsheet2text("https://docs.google.com/spreadsheets/d/1cqTuSeLtH-Zw7X9ZtnhQxzw3r19Rya9nzdqRW9apTmY/edit#gid=865906911",
+                                format = 'csv'),
+             stringsAsFactors = FALSE, strip.white = TRUE),
+  postdoc =
+    read.csv(text = gsheet2text("https://docs.google.com/spreadsheets/d/1cqTuSeLtH-Zw7X9ZtnhQxzw3r19Rya9nzdqRW9apTmY/edit#gid=168586174",
+                                format = 'csv'),
+             stringsAsFactors = FALSE, strip.white = TRUE)
 )
 
 #Drop first row, make 2nd row new headers
@@ -58,7 +64,8 @@ carnegie_dat <- as.data.frame(carnegie_dat)
 carnegie_val <- as.data.frame(carnegie_val)
 carnegie_var <- as.data.frame(carnegie_var)
 
-aliases <- read.csv("./data-raw/aliases.csv", fileEncoding = "UTF-8")
+aliases <- read.csv("./data-raw/aliases.csv", fileEncoding = "UTF-8",
+                    strip.white = TRUE)
 
 #Convert numeric codes into meaningful labels
 for(i in 1:ncol(carnegie_dat)) {
@@ -193,5 +200,7 @@ jobs2 <- dplyr::left_join(x = jobs2$jobs, y = carnegie_dat)
 jobs1 <- rename(jobs1, "Matched institution name" = "Institution name")
 jobs2 <- rename(jobs2, "Matched institution name" = "Institution name")
 
-write.csv(jobs1, "./data-raw/ecoevojobsR_faculty.csv", row.names = FALSE)
-write.csv(jobs2, "./data-raw/ecoevojobsR_postdoc.csv", row.names = FALSE)
+write.csv(jobs1, "./data-raw/ecoevojobsR_faculty.csv",
+          row.names = FALSE, fileEncoding = "UTF-8")
+write.csv(jobs2, "./data-raw/ecoevojobsR_postdoc.csv",
+          row.names = FALSE, fileEncoding = "UTF-8")
