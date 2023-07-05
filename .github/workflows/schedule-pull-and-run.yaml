@@ -55,16 +55,16 @@ jobs:
         shell: Rscript {0}
 
       - name: Commit files
-              run: |
-                git config --local user.email "actions@github.com"
-                git config --local user.name "GitHub Actions"
-                git add --all
-                git commit -am "Ran ecoevo_jobs_analysis.R & commit all changes"
-                git push
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add --all
+          git commit -am "Ran ecoevo_jobs_analysis.R & commit all changes"
+          git push
 
       - name: Session info for debugging
-              run: |
-                options(width = 100)
-                pkgs <- installed.packages()[, "Package"]
-                sessioninfo::session_info(pkgs, include_base = TRUE)
-              shell: Rscript {0}
+        run: |
+          options(width = 100)
+          pkgs <- installed.packages()[, "Package"]
+          sessioninfo::session_info(pkgs, include_base = TRUE)
+        shell: Rscript {0}
