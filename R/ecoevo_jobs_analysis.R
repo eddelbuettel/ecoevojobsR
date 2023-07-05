@@ -184,11 +184,11 @@ jobs2 <- find_matches(jobs = jobs[[2]], carnegie = carnegie_dat,
 if(nrow(jobs1$aliases) > nrow(aliases)) {
   write.csv(x = jobs1$aliases, file = "./data-raw/aliases_new1.csv",
             row.names = FALSE, fileEncoding = "UTF-8")
-}
+} else {file.remove("./data-raw/aliases_new1.csv")}
 if(nrow(jobs2$aliases) > nrow(aliases)) {
   write.csv(x = jobs2$aliases, file = "./data-raw/aliases_new2.csv",
             row.names = FALSE, fileEncoding = "UTF-8")
-}
+} else {file.remove("./data-raw/aliases_new2.csv")}
 
 ##If there are new aliases, they need to be added to aliases.csv
 ## and have their matching institution name saved there too
