@@ -9,7 +9,7 @@ disciplines. However, the ecoevojobs spreadsheet has relatively little
 information automatically included about the institution where the job
 posting is.
 
-Once per day, this repository automatically pulls public information
+Once per hour, this repository automatically pulls public information
 from [the Carnegie Classification of Institutions of Higher
 Education](https://carnegieclassifications.acenet.edu/) and merges it
 into the ecoevojobs spreadsheet.
