@@ -9,8 +9,8 @@ disciplines. However, the ecoevojobs spreadsheet has relatively little
 information automatically included about the institution where the job
 posting is.
 
-This repository automatically pulls public information from [the
-Carnegie Classification of Institutions of Higher
+Once per day, this repository automatically pulls public information
+from [the Carnegie Classification of Institutions of Higher
 Education](https://carnegieclassifications.acenet.edu/) and merges it
 into the ecoevojobs spreadsheet.
 
@@ -20,13 +20,11 @@ here](https://github.com/mikeblazanin/ecoevojobsR/blob/master/data-raw/ecoevojob
 [You can find the most-recently updated postdoc jobs listing file
 here](https://github.com/mikeblazanin/ecoevojobsR/blob/master/data-raw/ecoevojobsR_postdoc.csv)
 
-Note that I couldn’t figure out an easy way to automate the updating of
-these spreadsheets. If you have an idea how that could be done, email
-me! <mikeblazanin@gmail.com>. Otherwise, they’ll be updated when I can,
-or when people ask me to.
+If you have any suggestions or see any errors, email me!
+<mikeblazanin@gmail.com>
 
-If you want an up-to-date version for yourself and don’t want to wait on
-me, you can simply follow these steps:
+If you’d like to see how this works, or want to download the script to
+play around with yourself, you can follow these steps:
 
 1.  Create a folder. Open R and set your working directory to this
     folder.
@@ -37,22 +35,23 @@ me, you can simply follow these steps:
 4.  Download and save the files in
     [data-raw](https://github.com/mikeblazanin/ecoevojobsR/tree/master/data-raw)
     into that subfolder
-5.  Download the latest ecoevojobs spreadsheet as an Excel file, and
-    overwrite the existing `ecoevojobs 22-23.xlsx` file
-6.  Run ecoevo_jobs_analysis.R (with the working directory in the parent
+5.  Run ecoevo_jobs_analysis.R (with the working directory in the parent
     folder). The script should automatically update the
     `ecoevojobsR_faculty.csv` and `ecoevojobsR_postdocs.csv` files.
 
-Note that some institution names may be unable to be matched
-automatically. If this is the case, during execution
+Note that some institution names are unable to be matched automatically.
+When this happens, the script checks the `aliases.csv` file, which I’ve
+manually filled in with previous listed institution names from
+ecoevojobs and the corresponding name in the Carnegie Classifications.
+If some new names are not found in `aliases.csv`, during execution
 `ecoevo_jobs_analysis.R` will print statement with the number of
 institutions for which this is true.
 
 If you’d like to manually tell the script how to match those:
 
 1.  Find the `aliases_new1.csv` and `aliases_new2.csv` files that were
-    created by running script, they should be located in the `data-raw`
-    folder
+    created by running the script, they should be located in the
+    `data-raw` folder
 2.  Copy-paste the rows from those files where the `checked` column is
     `N` into the `aliases.csv` file
 3.  For each institution, find the corresponding row in the `Data` tab
