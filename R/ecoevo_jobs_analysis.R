@@ -204,3 +204,6 @@ write.csv(jobs1, "./data-raw/ecoevojobsR_faculty.csv",
           row.names = FALSE, fileEncoding = "UTF-8")
 write.csv(jobs2, "./data-raw/ecoevojobsR_postdoc.csv",
           row.names = FALSE, fileEncoding = "UTF-8")
+
+#Write date-time to file
+writeLines(format(Sys.time(), usetz = TRUE), "./data-raw/lastrun.txt")
