@@ -103,7 +103,7 @@ find_matches <- function(jobs, carnegie, aliases) {
       jobs$`Institution name`[i] <- "International"
       next
     }
-    #Do plain matching
+    #Do exact matching
     matches <- grep(paste0("^", myinst, "$"), carnegie$`Institution name`)
     if(length(matches) > 1) {
       #Match by state if there are multiple matches
@@ -152,6 +152,17 @@ find_matches <- function(jobs, carnegie, aliases) {
   # manually-curated list of aliases
   unmatched_names <- unique(jobs$Institution[is.na(jobs$`Institution name`)])
 
+  if(any(!is.na(aliases$carnegie_names) &
+         !aliases$carnegie_names %in% carnegie$`Institution name`)) {
+    warning(
+      paste0("Not all aliases found in Carnegie. Check alias correctness:\n",
+            paste(
+              aliases$carnegie_names[
+                !is.na(aliases$carnegie_names) &
+                !aliases$carnegie_names %in% carnegie$`Institution name`],
+                  collapse = "\n")))
+  }
+
   #original aliases.csv file created by running
   # data.frame("ecoevo_names" = unmatched_names,
   #            "carnegie_names" = NA, "checked" = "N"))
@@ -169,8 +180,11 @@ find_matches <- function(jobs, carnegie, aliases) {
   myrows <- which(is.na(jobs$`Institution name`))
   jobs$`Institution name`[myrows] <-
     aliases$carnegie_names[match(jobs$Institution[myrows], aliases$ecoevo_names)]
+  jobs$`State abbreviation`[myrows] <-
+    carnegie$`State abbreviation`[
+      match(jobs$`Institution name`[myrows], carnegie$`Institution name`)]
 
-  jobs$partial_matched[myrows][!is.na(jobs$`Institution name`[myrows])] <- TRUE
+  jobs$partial_matched[myrows][!is.na(jobs$`Institution name`[myrows])] <- "alias"
 
   #Return results
   return(list("jobs" = jobs, "aliases" = aliases))
