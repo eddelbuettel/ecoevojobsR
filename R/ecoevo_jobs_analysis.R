@@ -5,11 +5,15 @@ library(readxl)
 #These are the links for the 2022-2023 sheet
 jobs <- list(
   faculty =
-    read.csv(text = gsheet2text("https://docs.google.com/spreadsheets/d/1cqTuSeLtH-Zw7X9ZtnhQxzw3r19Rya9nzdqRW9apTmY/edit#gid=865906911",
+    read.csv(text = gsheet2text("https://docs.google.com/spreadsheets/d/1Fvh1BZANNKsn8oVqqN2V4mQtKjpivU7fGqygNTTRAj8/edit#gid=1864294017",
+                                format = 'csv'),
+             stringsAsFactors = FALSE, strip.white = TRUE),
+  fixed_term =
+    read.csv(text = gsheet2text("https://docs.google.com/spreadsheets/d/1Fvh1BZANNKsn8oVqqN2V4mQtKjpivU7fGqygNTTRAj8/edit#gid=202129152",
                                 format = 'csv'),
              stringsAsFactors = FALSE, strip.white = TRUE),
   postdoc =
-    read.csv(text = gsheet2text("https://docs.google.com/spreadsheets/d/1cqTuSeLtH-Zw7X9ZtnhQxzw3r19Rya9nzdqRW9apTmY/edit#gid=168586174",
+    read.csv(text = gsheet2text("https://docs.google.com/spreadsheets/d/1Fvh1BZANNKsn8oVqqN2V4mQtKjpivU7fGqygNTTRAj8/edit#gid=54534292",
                                 format = 'csv'),
              stringsAsFactors = FALSE, strip.white = TRUE)
 )
@@ -19,7 +23,9 @@ jobs <- lapply(jobs, function(x){colnames(x) <- x[1, ]; x <- x[-1, ]})
 #Drop Mod flag and all following columns
 jobs <- lapply(jobs, function(x){return(x[, 1:(which(colnames(x) == "Mod Flag")-1)])})
 
-jobs <- lapply(jobs, FUN = function(x) {return(x[!is.na(x$Timestamp), ])})
+jobs <- lapply(jobs,
+               FUN = function(x) {
+                 return(x[!is.na(x$Timestamp) & x$Timestamp != "", ])})
 
 #Read in Carnegie data sheets
 carnegie_val <-
@@ -88,7 +94,9 @@ colnames(carnegie_dat) <-
                          x = mytable, ignore.case = TRUE)]})
 
 #Match institution names
-uniq_inst <- unique(c(jobs[[1]]$Institution, jobs[[2]]$Institution))
+uniq_inst <- unique(c(jobs[[1]]$Institution,
+                      jobs[[2]]$Institution,
+                      jobs[[3]]$Institution))
 find_matches <- function(jobs, carnegie, aliases) {
   #Jobs should have columns named "Institution" and "Location"
   #Carnegie should have column named "Institution name"
@@ -190,34 +198,36 @@ find_matches <- function(jobs, carnegie, aliases) {
   return(list("jobs" = jobs, "aliases" = aliases))
 }
 
-jobs1 <- find_matches(jobs = jobs[[1]], carnegie = carnegie_dat,
-                          aliases = aliases)
-jobs2 <- find_matches(jobs = jobs[[2]], carnegie = carnegie_dat,
-                      aliases = aliases)
+jobs <- lapply(
+  X = jobs, FUN = function(x, c, a) {
+    find_matches(jobs = x, carnegie = c, aliases = a)},
+  c = carnegie_dat, a = aliases)
 
-if(nrow(jobs1$aliases) > nrow(aliases)) {
-  write.csv(x = jobs1$aliases, file = "./data-raw/aliases_new1.csv",
-            row.names = FALSE, fileEncoding = "UTF-8")
-} else {file.remove("./data-raw/aliases_new1.csv")}
-if(nrow(jobs2$aliases) > nrow(aliases)) {
-  write.csv(x = jobs2$aliases, file = "./data-raw/aliases_new2.csv",
-            row.names = FALSE, fileEncoding = "UTF-8")
-} else {file.remove("./data-raw/aliases_new2.csv")}
+for (i in 1:length(jobs)) {
+  if(nrow(jobs[[i]]$aliases) > nrow(aliases)) {
+    write.csv(x = jobs[[i]]$aliases,
+              file = paste0("./data-raw/aliases_new", i, ".csv"),
+              row.names = FALSE, fileEncoding = "UTF-8")
+  } else {file.remove(paste0("./data-raw/aliases_new", i, ".csv"))}
+}
 
 ##If there are new aliases, they need to be added to aliases.csv
 ## and have their matching institution name saved there too
 
 #Join carnegie_dat and jobs using matched institution name
-jobs1 <- dplyr::left_join(x = jobs1$jobs, y = carnegie_dat)
-jobs2 <- dplyr::left_join(x = jobs2$jobs, y = carnegie_dat)
+jobs <- lapply(X = jobs,
+               FUN = function(x, y) {dplyr::left_join(x = x$jobs, y = y)},
+               y = carnegie_dat)
 
-jobs1 <- rename(jobs1, "Matched institution name" = "Institution name")
-jobs2 <- rename(jobs2, "Matched institution name" = "Institution name")
+jobs <- lapply(X = jobs,
+               FUN = function(x) {
+                 rename(x, "Matched institution name" = "Institution name")})
 
-write.csv(jobs1, "./data-raw/ecoevojobsR_faculty.csv",
-          row.names = FALSE, fileEncoding = "UTF-8")
-write.csv(jobs2, "./data-raw/ecoevojobsR_postdoc.csv",
-          row.names = FALSE, fileEncoding = "UTF-8")
+mynames <- c("faculty", "fixed_term", "postdoc")
+for (i in 1:length(jobs)) {
+  write.csv(jobs[[i]], paste0("./data-raw/ecoevojobsR_", mynames[i], ".csv"),
+            row.names = FALSE, fileEncoding = "UTF-8")
+}
 
 #Write date-time to file
 writeLines(format(Sys.time(), usetz = TRUE), "./data-raw/lastrun.txt")
