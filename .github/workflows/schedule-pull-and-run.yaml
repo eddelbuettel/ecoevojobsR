@@ -49,6 +49,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          options("pkgType" = "binary")
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
 
