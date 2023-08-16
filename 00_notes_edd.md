@@ -1,6 +1,8 @@
 
-Cf [repo][repo] cloned on 2023-08-15 and [initial SO question][so question]
-with the hint for the dependency action
+## Overview
+
+- Original [repo][repo] cloned on 2023-08-15 
+- Initial [SO question][so question] with the hint for the dependency action
 
 
 [repo]: https://github.com/mikeblazanin/ecoevojobsR
